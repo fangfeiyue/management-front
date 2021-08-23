@@ -7,7 +7,7 @@ export default {
     localStorage.setItem(namespace, JSON.stringify(storage));
   },
   getItem(key) {
-    this.getStorage()[key];
+    return this.getStorage()[key];
   },
   getStorage() {
     return JSON.parse(localStorage.getItem(namespace) || '{}');

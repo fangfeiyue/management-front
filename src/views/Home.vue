@@ -21,8 +21,15 @@
 //   }
 </script>
 <script>
+import storage from '../utils/storage'
 export default {
   mounted() {
+
+    storage.setItem('name', 'f')
+    storage.setItem('age', 18)
+
+   
+
     // this.$request({
     //   method: 'get',
     //   url: '/login',
@@ -35,9 +42,9 @@ export default {
     //   console.log(err)
     // });
 
-    this.$request.get("/login", { name: "jack" }).catch(err => {
-      console.log(err)
-    });
+    // this.$request.get("/login", { name: "jack" }).catch(err => {
+    //   console.log(err)
+    // });
   },
 };
 </script>
