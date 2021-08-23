@@ -1,52 +1,50 @@
 <template>
-  <div>
-    <p>这里是首页</p>
-    <button @click="login">登录</button>
-    <div>
-      <router-link to="/home/recommend">推荐</router-link>
-      <router-link to="/home/hot">热搜</router-link>
+  <div class="basic-layout">
+    <div class="nav-side"></div>    
+    <div class="content-right">
+       <div class="nav-top">
+         <div class="bread">面包屑</div>
+         <div class="user-info">用户</div>
+       </div>
+       <div class="wrapper">
+         <div class="main-page">
+          <router-view></router-view>
+         </div>
+       </div>
     </div>
-    <router-view></router-view>
   </div>
 </template>
-<script setup>
-//   import { onMounted } from '@vue/runtime-core';
-//   import { useRouter } from 'vue-router'
-
-//   // 返回 router 实例。相当于在模板中使用 $router。必须在 setup() 中调用。
-//   const router = useRouter();
-
-//   const login = () => {
-//     router.push('/login')
-//   }
-</script>
-<script>
-import storage from '../utils/storage'
-export default {
-  mounted() {
-
-    storage.setItem('name', 'f')
-    storage.setItem('age', 18)
-
-   
-
-    // this.$request({
-    //   method: 'get',
-    //   url: '/login',
-    //   data: {
-    //     name: 'f'
-    //   }
-    // }).then(res => {
-    //   console.log(res)
-    // }).catch(err => {
-    //   console.log(err)
-    // });
-
-    // this.$request.get("/login", { name: "jack" }).catch(err => {
-    //   console.log(err)
-    // });
-  },
-};
-</script>
 <style lang="scss" scoped>
+  .basic-layout {
+    position: relative;
+    .nav-side {
+      position: fixed;
+      width: 200px;
+      height: 100vh;
+      background-color: #001529;
+      color: #fff;
+      overflow-y: auto;
+      transition: width 0.5s;
+    }
+    .content-right {
+      margin-left: 200px;
+      .nav-top {
+        height: 50px;
+        line-height: 50px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #ddd;
+        padding: 0 20px;
+      }
+      .wrapper {
+        background-color: #eef0f3;
+        padding: 20px;
+        height: calc(100vh - 50px);
+        .main-page {
+          height: 100%;
+          background-color: #fff;
+        }
+      }
+    }
+  }
 </style>

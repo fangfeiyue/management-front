@@ -1,24 +1,19 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
-import Recommend from '../components/Recommend.vue'
-import HotSearch from '../components/HotSearch.vue'
+import Welcome from '../components/Welcome.vue'
 
 const routes = [{
   path: '/',
-  redirect: '/home'
+  redirect: '/home/welcome'
 },{
   name: 'home',
   path: '/home',
   component: Home,
   children: [{
-    name: 'recommend',
-    component: Recommend,
-    path: 'recommend'
-  }, {
-    name: 'hot-search',
-    component: HotSearch,
-    path: 'hot'
+    name: 'welcome',
+    component: Welcome,
+    path: 'welcome'
   }]
 }, {
   name: 'login',
