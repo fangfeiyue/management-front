@@ -10,14 +10,36 @@
   </div>
 </template>
 <script setup>
-  import { useRouter } from 'vue-router'
-  
-  // 返回 router 实例。相当于在模板中使用 $router。必须在 setup() 中调用。
-  const router = useRouter();
+//   import { onMounted } from '@vue/runtime-core';
+//   import { useRouter } from 'vue-router'
 
-  const login = () => {
-    router.push('/login')
-  }
+//   // 返回 router 实例。相当于在模板中使用 $router。必须在 setup() 中调用。
+//   const router = useRouter();
+
+//   const login = () => {
+//     router.push('/login')
+//   }
+</script>
+<script>
+export default {
+  mounted() {
+    // this.$request({
+    //   method: 'get',
+    //   url: '/login',
+    //   data: {
+    //     name: 'f'
+    //   }
+    // }).then(res => {
+    //   console.log(res)
+    // }).catch(err => {
+    //   console.log(err)
+    // });
+
+    this.$request.get("/login", { name: "jack" }).catch(err => {
+      console.log(err)
+    });
+  },
+};
 </script>
 <style lang="scss" scoped>
 </style>
