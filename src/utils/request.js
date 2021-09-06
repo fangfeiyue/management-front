@@ -40,7 +40,7 @@ function request(options) {
 	if (options.method === 'get') {
 		options.params = options.data;
 	}
-	const isMock = config.mock;
+	let isMock = config.mock;
 	if (typeof options.mock != 'undefined') {
 		isMock = options.mock;
 	}
