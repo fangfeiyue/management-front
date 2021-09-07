@@ -1,15 +1,14 @@
 const env = import.meta.env.MODE || 'prod'
-
 const EnvConfig = {
-  dev: {
-    baseApi: ''
+  development: {
+    baseApi: '/api'
   },
-  prod: {
+  production: {
     baseApi: ''
   }
 };
 export default {
   env: 'dev',
-  mock: true,
+  mock: false,
   ...EnvConfig[env]
 }
