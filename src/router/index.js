@@ -9,12 +9,18 @@ const routes = [
 	{
 		name: 'home',
 		path: '/home',
+    meta: {
+      title: '首页'
+    },
 		component: Home,
 		children: [
 			{
 				name: 'welcome',
 				component: () => import('../components/Welcome.vue'),
-				path: 'welcome'
+				path: 'welcome',
+        meta: {
+          title: '欢迎页'
+        }
 			}
 		]
 	},

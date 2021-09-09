@@ -22,7 +22,9 @@
           <div class="menu-fold" @click="toggle">
             <i class="el-icon-s-fold"></i>
           </div>
-          <div class="bread">面包屑</div>
+          <div class="bread">
+            <bread-crumb/>
+          </div>
         </div>
         <div class="user-info">
           <el-badge
@@ -58,9 +60,10 @@
   </div>
 </template>
 <script>
+import BreadCrumb from '../components/BreadCrumb.vue';
 import TreeMenu from '../components/TreeMenu.vue';
 export default {
-  components: { TreeMenu },
+  components: { TreeMenu, BreadCrumb },
   data() {
     return {
       isCollapse: false,
