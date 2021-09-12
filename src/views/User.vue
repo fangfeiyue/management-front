@@ -1,14 +1,14 @@
 <template>
   <div class="user-manage">
     <div class="query-form">
-      <el-form :inline="true" :model="user">
-        <el-form-item>
+      <el-form ref="form" :inline="true" :model="user">
+        <el-form-item label="用户ID" prop="userId">
           <el-input v-model="user.userId" placeholder="请输入用户ID" />
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="用户名称" prop="userName">
           <el-input v-model="user.userName" placeholder="请输入用户名称" />
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="状态" prop="state">
           <el-select v-model="user.state">
             <el-option :value="0" label="所有"></el-option>
             <el-option :value="1" label="在职"></el-option>
@@ -17,8 +17,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">查询</el-button>
-          <el-button>重置</el-button>
+          <el-button type="primary" @click="handleQuery">查询</el-button>
+          <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -45,16 +45,36 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        class="pagination"
+        @current-change="handleCurrentChange"
+        background
+        layout="prev, pager, next"
+        :total="30"
+        :page-size="10"
+      />
     </div>
   </div>
 </template>
 <script>
-import { reactive, onMounted, ref } from "vue";
+import { reactive, onMounted, getCurrentInstance } from "vue";
 export default {
   name: "user",
   setup() {
-    const user = reactive({});
+    const { ctx } = getCurrentInstance();
+    const internalInstance = getCurrentInstance();
+    const $api = internalInstance.appContext.config.globalProperties.$api;
+
+    // 设置默认值
+    const user = reactive({
+      state: 1,
+    });
+
     const userList = reactive([{}, {}]);
+    const pager = reactive({
+      pageNum: 1,
+      pageSize: 10,
+    });
     const columns = reactive([
       {
         label: "用户ID",
@@ -85,10 +105,36 @@ export default {
         prop: "lastLoginTime",
       },
     ]);
+    onMounted(() => {
+      getUserList();
+    });
+    const getUserList = async () => {
+      const params = { ...user, ...pager };
+      console.log(params);
+      try {
+        const { list, page } = await $api.getUserList(params);
+        userList = list;
+        pager.total = page.total;
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    const handleQuery = () => {};
+    const handleReset = () => {
+      ctx.$refs.form.resetFields();
+    };
+    const handleCurrentChange = (currentPage) => {
+      pager.pageNum = currentPage;
+      getUserList();
+    };
     return {
       user,
+      pager,
       columns,
       userList,
+      handleQuery,
+      handleReset,
+      handleCurrentChange
     };
   },
 };
