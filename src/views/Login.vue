@@ -33,8 +33,8 @@ export default {
   data() {
     return {
       user: {
-        userName: "",
-        password: "",
+        userName: 'f',
+        password: '123456',
       },
       rules: {
         userName: [
