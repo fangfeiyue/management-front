@@ -25,9 +25,9 @@
     <div class="base-table">
       <div class="action">
         <el-button type="primary">新增</el-button>
-        <el-button type="danger">批量删除</el-button>
+        <el-button type="danger" @click="handlePatchDel">批量删除</el-button>
       </div>
-      <el-table :data="userList">
+      <el-table :data="userList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column
           v-for="item in columns"
@@ -35,13 +35,16 @@
           :prop="item.prop"
           :label="item.label"
           :width="item.width"
+          :formatter="item.formatter"
         />
         <el-table-column label="操作" width="150">
           <template #default="scope">
             <el-button @click="handleClick(scope.row)" size="mini"
               >编辑</el-button
             >
-            <el-button type="danger" size="mini">删除</el-button>
+            <el-button type="danger" size="mini" @click="handleDel(scope.row)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -50,31 +53,34 @@
         @current-change="handleCurrentChange"
         background
         layout="prev, pager, next"
-        :total="30"
-        :page-size="10"
+        :total="pager.total"
+        :page-size="pager.pageSize"
       />
     </div>
   </div>
 </template>
 <script>
-import { reactive, onMounted, getCurrentInstance } from "vue";
+import { reactive, onMounted, ref, getCurrentInstance } from "vue";
 export default {
   name: "user",
   setup() {
-    const { ctx } = getCurrentInstance();
+    const { ctx, proxy } = getCurrentInstance();
     const internalInstance = getCurrentInstance();
     const $api = internalInstance.appContext.config.globalProperties.$api;
+    const $message = internalInstance.appContext.config.globalProperties.$message;
 
     // 设置默认值
     const user = reactive({
       state: 1,
     });
 
-    const userList = reactive([{}, {}]);
+    const userList = ref([]);
     const pager = reactive({
+      total: 10,
       pageNum: 1,
       pageSize: 10,
     });
+    let checkedUserIds = reactive([]);
     const columns = reactive([
       {
         label: "用户ID",
@@ -91,10 +97,24 @@ export default {
       {
         label: "用户角色",
         prop: "role",
+        formatter(row, column, value, index) {
+          console.log(row, column, value, index);
+          return {
+            0: '管理员',
+            1: '普通用户'
+          }[value];
+        }
       },
       {
         label: "用户状态",
         prop: "state",
+        formatter(row, column, value) {
+          return {
+            1: '在职',
+            2: '离职',
+            3: '试用期'
+          }[value];
+        }
       },
       {
         label: "注册时间",
@@ -110,10 +130,9 @@ export default {
     });
     const getUserList = async () => {
       const params = { ...user, ...pager };
-      console.log(params);
       try {
         const { list, page } = await $api.getUserList(params);
-        userList = list;
+        userList.value = list;
         pager.total = page.total;
       } catch (err) {
         console.log(err);
@@ -127,14 +146,52 @@ export default {
       pager.pageNum = currentPage;
       getUserList();
     };
+    const handleDel = async (row) => {
+      try {
+        await $api.userDel({
+          userIds: [row.userId],
+        });
+        $message.success("删除成功");
+        getUserList();
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    const handlePatchDel = async () => {
+      if (checkedUserIds.length == 0) {
+        $message.error("请选择要删除的用户");
+        return;
+      }
+      try {
+        const res = await $api.userDel({
+          userIds: checkedUserIds,
+        });
+        if (res.nModified > 0) {
+          $message.success("删除成功");
+          getUserList();
+        }else {
+          $message.success("删除失败");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    const handleSelectionChange = (list) => {
+      checkedUserIds = list.map((item) => item.userId);
+    };
     return {
       user,
       pager,
       columns,
       userList,
+      checkedUserIds,
+
+      handleDel,
       handleQuery,
       handleReset,
-      handleCurrentChange
+      handlePatchDel,
+      handleCurrentChange,
+      handleSelectionChange,
     };
   },
 };
