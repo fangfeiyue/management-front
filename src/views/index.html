@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    div {
+      display: inline-block;
+      padding: 10px;
+      min-width: 10px;
+      background-color: green;
+      position: relative;
+      border-radius: 8px;
+    }
+    div::after {
+      content: ' ';
+      display: inline-block;
+      border: 5px solid green;
+      border-top-color: transparent;
+      border-left-color: transparent;
+      border-bottom-color: transparent;
+      position: absolute;
+      top: 7px;
+      left: -10px;
+    }
+  </style>
+</head>
+<body>
+  <p><input id="input" type="text" onkeyup="handleInput()"></p>
+  <div id="content">
+  </div>
+  <script>
+    function handleInput() {
+      content.textContent = input.value;
+    }
+  </script>
+</body>
+</html>

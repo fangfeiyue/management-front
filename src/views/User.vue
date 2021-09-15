@@ -18,7 +18,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button @click="handleReset('form')">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -39,7 +39,7 @@
         />
         <el-table-column label="操作" width="150">
           <template #default="scope">
-            <el-button @click="handleClick(scope.row)" size="mini"
+            <el-button @click="handleEdit(scope.row)" size="mini"
               >编辑</el-button
             >
             <el-button type="danger" size="mini" @click="handleDel(scope.row)"
@@ -57,7 +57,10 @@
         :page-size="pager.pageSize"
       />
     </div>
-    <el-dialog title="用户新增" v-model="showModal">
+    <el-dialog
+      :title="action == 'add' ? '用户新增' : '用户编辑'"
+      v-model="showModal"
+    >
       <!-- ref 名字和 model 的名字不能相同 -->
       <el-form
         ref="dialogForm"
@@ -66,10 +69,18 @@
         label-width="100px"
       >
         <el-form-item label="用户名" prop="userName">
-          <el-input v-model="userForm.userName" placeholder="请输入用户名" />
+          <el-input
+            v-model="userForm.userName"
+            placeholder="请输入用户名"
+            :disabled="action === 'edit'"
+          />
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="userForm.email" placeholder="请输入用户邮箱">
+        <el-form-item label="邮箱" prop="userEmail">
+          <el-input
+            v-model="userForm.userEmail"
+            placeholder="请输入用户邮箱"
+            :disabled="action === 'edit'"
+          >
             <!-- input 插槽的使用 -->
             <template #append> @163.com </template>
           </el-input>
@@ -91,40 +102,47 @@
           <el-select
             v-model="userForm.roleList"
             placeholder="请选择用户系统角色"
+            multiple
+            style="width: 100%"
           >
-            <el-option></el-option>
+            <el-option
+              v-for="role in roleList"
+              :key="role._id"
+              :label="role.roleName"
+              :value="role._id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="部门" prop="deptId">
           <el-cascader
             v-model="userForm.deptId"
             placeholder="请选择所属部门"
-            :options="options"
+            :options="deptList"
             :props="{ checkStrictly: true, value: '_id', label: 'deptName' }"
             clearable
+            style="width: 100%"
           ></el-cascader>
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogVisible = false"
-            >确 定</el-button
-          >
+          <el-button @click="handleClose">取 消</el-button>
+          <el-button type="primary" @click="handleSubmit">确 定</el-button>
         </span>
       </template>
     </el-dialog>
   </div>
 </template>
 <script>
-import { reactive, onMounted, ref, getCurrentInstance } from "vue";
+import { reactive, onMounted, ref, getCurrentInstance, toRaw } from "vue";
 export default {
   name: "user",
   setup() {
     const { ctx, proxy } = getCurrentInstance();
     const internalInstance = getCurrentInstance();
     const $api = internalInstance.appContext.config.globalProperties.$api;
-    const $message = internalInstance.appContext.config.globalProperties.$message;
+    const $message =
+      internalInstance.appContext.config.globalProperties.$message;
 
     // 设置默认值
     const user = reactive({
@@ -150,7 +168,7 @@ export default {
           pattern: /1\d{10}/,
           message: "请输入正确的手机号格式",
           trigger: "blur",
-        }
+        },
       ],
       deptId: [
         {
@@ -163,11 +181,11 @@ export default {
     const userForm = reactive({
       state: 1,
       job: "",
-      email: "",
-      mobile: "",
-      deptId: "",
+      userEmail: "2",
+      mobile: "11111111111",
+      deptId: [],
       roleList: [],
-      userName: "",
+      userName: "f",
     });
     const userList = ref([]);
     const showModal = ref(false);
@@ -194,7 +212,6 @@ export default {
         label: "用户角色",
         prop: "role",
         formatter(row, column, value, index) {
-          console.log(row, column, value, index);
           return {
             0: "管理员",
             1: "普通用户",
@@ -221,8 +238,13 @@ export default {
         prop: "lastLoginTime",
       },
     ]);
+    const roleList = ref([]);
+    const deptList = ref([]);
+    const action = ref("add");
     onMounted(() => {
       getUserList();
+      getDeptList();
+      getRoleList();
     });
     const getUserList = async () => {
       const params = { ...user, ...pager };
@@ -235,12 +257,21 @@ export default {
       }
     };
     const handleQuery = () => {};
-    const handleReset = () => {
-      ctx.$refs.form.resetFields();
+    const handleReset = (form) => {
+      ctx.$refs[form].resetFields();
     };
     const handleCurrentChange = (currentPage) => {
       pager.pageNum = currentPage;
       getUserList();
+    };
+    const handleEdit = (row) => {
+      action.value = "edit";
+      showModal.value = true;
+      // 问题 点击编辑后再点击新增，新增窗口显示的是编辑自动填充的内容
+      ctx.$nextTick(() => {
+        Object.assign(userForm, row);
+      });
+      // Object.assign(userForm, row);
     };
     const handleDel = async (row) => {
       try {
@@ -276,22 +307,65 @@ export default {
       checkedUserIds = list.map((item) => item.userId);
     };
     const handleCreate = () => {
-      console.log("111");
+      action.value = "add";
       showModal.value = true;
+    };
+    const getDeptList = async () => {
+      try {
+        deptList.value = await $api.getDeptList();
+      } catch (err) {
+        console.log("获取部门列表出错", err);
+      }
+    };
+    const getRoleList = async () => {
+      try {
+        roleList.value = await $api.getRoleList();
+      } catch (err) {
+        console.log("获取角色列表出错", err);
+      }
+    };
+    const handleSubmit = () => {
+      ctx.$refs.dialogForm.validate(async (valid) => {
+        if (valid) {
+          const params = toRaw(userForm);
+          params.userEmail += "@163.com";
+          params.action = action.value;
+          const res = await $api.userSubmit(params);
+
+          if (res) {
+            $message.success("用户创建成功");
+            handleReset("dialogForm");
+            showModal.value = false;
+            getUserList();
+          }
+        }
+      });
+    };
+    const handleClose = () => {
+      handleReset("dialogForm");
+      showModal.value = false;
     };
     return {
       user,
       rules,
       pager,
+      action,
       columns,
       userList,
       userForm,
+      roleList,
+      deptList,
       showModal,
       checkedUserIds,
 
       handleDel,
+      handleEdit,
       handleQuery,
+      getRoleList,
+      getDeptList,
       handleReset,
+      handleClose,
+      handleSubmit,
       handleCreate,
       handlePatchDel,
       handleCurrentChange,
