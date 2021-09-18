@@ -135,6 +135,7 @@
 </template>
 <script>
 import { reactive, onMounted, ref, getCurrentInstance, toRaw } from "vue";
+import utils from "../utils/utils";
 export default {
   name: "user",
   setup() {
@@ -146,7 +147,7 @@ export default {
 
     // 设置默认值
     const user = reactive({
-      state: 3,
+      state: 1,
     });
     const rules = reactive({
       userName: [
@@ -232,10 +233,18 @@ export default {
       {
         label: "注册时间",
         prop: "createTime",
+        width: "180",
+        formatter(row, column, value) {
+          return utils.formateDate(new Date());
+        },
       },
       {
         label: "最后登录时间",
         prop: "lastLoginTime",
+        width: "180",
+        formatter(row, column, value) {
+          return utils.formateDate(new Date());
+        },
       },
     ]);
     const roleList = ref([]);
