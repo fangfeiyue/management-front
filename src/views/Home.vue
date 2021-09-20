@@ -13,7 +13,7 @@
         :collapse="isCollapse"
         class="nav-menu"
       >
-        <tree-menu :menuList="menuList"/>
+        <tree-menu :menuList="menuList" />
       </el-menu>
     </div>
     <div :class="['content-right', isCollapse ? 'fold' : 'unfold']">
@@ -23,7 +23,7 @@
             <i class="el-icon-s-fold"></i>
           </div>
           <div class="bread">
-            <bread-crumb/>
+            <bread-crumb />
           </div>
         </div>
         <div class="user-info">
@@ -61,8 +61,8 @@
   </div>
 </template>
 <script>
-import BreadCrumb from '../components/BreadCrumb.vue';
-import TreeMenu from '../components/TreeMenu.vue';
+import BreadCrumb from "../components/BreadCrumb.vue";
+import TreeMenu from "../components/TreeMenu.vue";
 export default {
   components: { TreeMenu, BreadCrumb },
   data() {
@@ -85,14 +85,14 @@ export default {
     handleLogout(key) {
       if (key === "email") return;
       this.$store.commit("saveUserInfo", "");
-      this.userInfo = null;
+      this.userInfo = {};
       this.$router.replace("/login");
     },
     async getNoticeCount() {
       try {
         const count = await this.$api.noticeCount();
         this.noticeCount = count;
-      }catch(err) {
+      } catch (err) {
         console.error(err);
       }
     },
@@ -100,10 +100,10 @@ export default {
       try {
         const list = await this.$api.getMenuList();
         this.menuList = list;
-      }catch(err) {
+      } catch (err) {
         console.error(err);
       }
-    }
+    },
   },
 };
 </script>

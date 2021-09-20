@@ -265,7 +265,9 @@ export default {
         console.log(err);
       }
     };
-    const handleQuery = () => {};
+    const handleQuery = () => {
+      getUserList();
+    };
     const handleReset = (form) => {
       ctx.$refs[form].resetFields();
     };
