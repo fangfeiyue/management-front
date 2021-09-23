@@ -166,7 +166,7 @@ export default {
       ],
       mobile: [
         {
-          pattern: /1\d{10}/,
+          pattern: /1[3-9]\d{9}/,
           message: "请输入正确的手机号格式",
           trigger: "blur",
         },
@@ -344,7 +344,9 @@ export default {
           const res = await $api.userSubmit(params);
 
           if (res) {
-            $message.success("用户创建成功");
+            $message.success(
+              `用户${action.value === "edit" ? "编辑" : "创建"}成功`
+            );
             handleReset("dialogForm");
             showModal.value = false;
             getUserList();
@@ -353,8 +355,8 @@ export default {
       });
     };
     const handleClose = () => {
-      handleReset("dialogForm");
       showModal.value = false;
+      handleReset("dialogForm");
     };
     return {
       user,

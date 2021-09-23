@@ -56,7 +56,8 @@ export default {
 		return request({
 			url: '/users/operate',
 			method: 'post',
-			data: params
+			data: params,
+			mock: false
 		});
 	}
 };
