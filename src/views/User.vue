@@ -174,7 +174,7 @@ export default {
       deptId: [
         {
           required: true,
-          message: "请输入用户邮箱",
+          message: "请选择用户所在部门",
           trigger: "blur",
         },
       ],
@@ -183,7 +183,7 @@ export default {
       state: 1,
       job: "",
       userEmail: "2",
-      mobile: "11111111111",
+      mobile: "130123456789",
       deptId: [],
       roleList: [],
       userName: "f",
@@ -339,9 +339,10 @@ export default {
       ctx.$refs.dialogForm.validate(async (valid) => {
         if (valid) {
           const params = toRaw(userForm);
-          params.userEmail += "@163.com";
+          const email = params.userEmail + "@163.com";
+          console.log(params.userEmail);
           params.action = action.value;
-          const res = await $api.userSubmit(params);
+          const res = await $api.userSubmit({ ...params, userEmail: email });
 
           if (res) {
             $message.success(
