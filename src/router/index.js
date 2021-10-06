@@ -9,29 +9,38 @@ const routes = [
 	{
 		name: 'home',
 		path: '/home',
-    meta: {
-      title: '首页'
-    },
+		meta: {
+			title: '首页'
+		},
 		component: Home,
 		children: [
 			{
 				name: 'welcome',
 				component: () => import('../components/Welcome.vue'),
 				path: 'welcome',
-        meta: {
-          title: '欢迎页'
-        }
+				meta: {
+					title: '欢迎页'
+				}
 			},
-      {
+			{
 				name: 'user',
 				component: () => import('../views/User.vue'),
-				path: 'user',
-        meta: {
-          title: '用户管理'
-        }
+				path: '/system/user',
+				meta: {
+					title: '用户管理'
+				}
+			},
+			{
+				name: 'menu',
+				path: '/system/menu',
+				meta: {
+					title: '菜单管理'
+				},
+				component: () => import('../views/Menu.vue')
 			}
 		]
 	},
+
 	{
 		name: 'login',
 		path: '/login',
