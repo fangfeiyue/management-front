@@ -36,7 +36,10 @@
         />
         <el-table-column label="操作" width="220">
           <template #default="scope">
-            <el-button @click="handleAdd(2, scope.row)" size="mini"
+            <el-button
+              @click="handleAdd(2, scope.row)"
+              size="mini"
+              type="primary"
               >新增</el-button
             >
             <el-button @click="handleEdit(scope.row)" size="mini"
@@ -223,7 +226,7 @@ export default {
     },
     handleAdd(type, row) {
       this.showModal = true;
-      this.actions = "add";
+      this.action = "add";
 
       if (type === 2) {
         this.menuForm.parentId = [...row.parentId, row._id].filter(
@@ -231,14 +234,35 @@ export default {
         );
       }
     },
-    handleEdit() {},
-    handleDel() {},
+    handleEdit(row) {
+      this.showModal = true;
+      this.action = "edit";
+      this.$nextTick(() => {
+        // 这样写会有问题
+        // this.menuForm = row;
+
+        Object.assign(this.menuForm, row);
+      });
+    },
+    async handleDel({ _id }) {
+      await this.$api.menuSubmit({ _id, action: "delete" });
+      this.$message.success("删除成功");
+      this.getMenuList();
+    },
     handleClose() {
       this.showModal = false;
       this.handleReset("dialogForm");
     },
     handleReset(form) {
+      // 对整个表单进行重置，将所有字段值重置为初始值并移除校验结果
       this.$refs[form].resetFields();
+      // console.log(this.$refs[form].resetFields);
+
+      // this.menuForm = {
+      //   parentId: [null],
+      //   menuType: 1,
+      //   menuState: 1,
+      // };
     },
     handleSubmit() {
       this.$refs.dialogForm.validate(async (valid) => {
@@ -246,6 +270,7 @@ export default {
           const { action, menuForm } = this;
           const res = await this.$api.menuSubmit({ ...menuForm, action });
           this.showModal = false;
+          this.$message.success("操作成功");
           this.handleReset("dialogForm");
           this.getMenuList();
         }

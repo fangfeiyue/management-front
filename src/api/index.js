@@ -64,7 +64,8 @@ export default {
 		return request({
 			url: '/menu/operate',
 			method: 'post',
-			data: params
+			data: params,
+			mock: false
 		});
 	}
 };
