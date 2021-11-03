@@ -227,8 +227,7 @@ export default {
     handleAdd(type, row) {
       this.showModal = true;
       this.action = "add";
-
-      if (type === 2) {
+      if (type == 2) {
         this.menuForm.parentId = [...row.parentId, row._id].filter(
           (item) => item
         );

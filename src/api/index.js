@@ -19,7 +19,8 @@ export default {
 		return request({
 			url: '/menu/list',
 			method: 'get',
-			data: {}
+			data: params,
+			mock: false
 		});
 	},
 	getUserList(params) {
