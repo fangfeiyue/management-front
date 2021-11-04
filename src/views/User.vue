@@ -253,7 +253,7 @@ export default {
     onMounted(() => {
       getUserList();
       getDeptList();
-      getRoleList();
+      getRoleAllList();
     });
     const getUserList = async () => {
       const params = { ...user, ...pager };
@@ -328,9 +328,9 @@ export default {
         console.log("获取部门列表出错", err);
       }
     };
-    const getRoleList = async () => {
+    const getRoleAllList = async () => {
       try {
-        roleList.value = await $api.getRoleList();
+        roleList.value = await $api.getRoleAllList();
       } catch (err) {
         console.log("获取角色列表出错", err);
       }
@@ -375,12 +375,12 @@ export default {
       handleDel,
       handleEdit,
       handleQuery,
-      getRoleList,
       getDeptList,
       handleReset,
       handleClose,
       handleSubmit,
       handleCreate,
+      getRoleAllList,
       handlePatchDel,
       handleCurrentChange,
       handleSelectionChange,

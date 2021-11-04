@@ -20,7 +20,7 @@ export default {
 			url: '/menu/list',
 			method: 'get',
 			data: params,
-			mock: false
+			mock: true
 		});
 	},
 	getUserList(params) {
@@ -39,9 +39,16 @@ export default {
 			mock: false
 		});
 	},
-	getRoleList() {
+	getRoleAllList() {
 		return request({
 			url: '/roles/allList',
+			method: 'get',
+			data: {}
+		});
+	},
+	getRoleList() {
+		return request({
+			url: '/roles/list',
 			method: 'get',
 			data: {}
 		});
@@ -67,6 +74,13 @@ export default {
 			method: 'post',
 			data: params,
 			mock: false
+		});
+	},
+	roleOperate(params) {
+		return request({
+			url: '/roles/operate',
+			method: 'post',
+			data: params
 		});
 	}
 };
