@@ -28,7 +28,10 @@
             <el-button size="mini" @click="handleEdit(scope.row)"
               >编辑</el-button
             >
-            <el-button size="mini" type="primary" @click="handlePermission"
+            <el-button
+              size="mini"
+              type="primary"
+              @click="handlePermission(scope.row)"
               >设置权限</el-button
             >
             <el-button size="mini" type="danger" @click="handleDel"
@@ -75,6 +78,27 @@
         </span>
       </template>
     </el-dialog>
+    <el-dialog v-model="isShowPermission" title="权限设置">
+      <el-form>
+        <el-form-item label="角色名称：">{{ curRole }}</el-form-item>
+        <el-form-item label="选择权限：">
+          <el-tree
+            ref="tree"
+            :data="menuList"
+            node-key="_id"
+            default-expand-all
+            :props="{ label: 'menuName' }"
+            show-checkbox
+          ></el-tree>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="isShowPermission = false">取消</el-button>
+          <el-button type="primary" @click="permissionSubmit">确认</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -83,6 +107,10 @@ export default {
     return {
       action: "",
       roleList: [],
+      // 当前要设置权限的角色
+      curRole: "",
+      curRoleId: "",
+      isShowPermission: true,
       isShowDialog: false,
       roleForm: {
         roleName: "",
@@ -123,10 +151,12 @@ export default {
           },
         ],
       },
+      menuList: [],
     };
   },
   mounted() {
     this.getRoleList();
+    this.getMenuList();
   },
   methods: {
     async getRoleList() {
@@ -136,6 +166,13 @@ export default {
         this.roleList = list;
       } catch (err) {
         console.log("角色列表请求失败", err);
+      }
+    },
+    async getMenuList() {
+      try {
+        this.menuList = await this.$api.getMenuList();
+      } catch (err) {
+        throw err;
       }
     },
     handleCreate() {
@@ -183,7 +220,37 @@ export default {
         }
       });
     },
-    handlePermission() {},
+    handlePermission(row) {
+      this.curRoleId = row._id;
+      this.curRole = row.roleName;
+      this.isShowPermission = true;
+      const { checkedKeys } = row.permissionList;
+      this.$refs.tree.setCheckedKeys(checkedKeys);
+    },
+    async permissionSubmit() {
+      const checkedNodes = this.$refs.tree.getCheckedNodes();
+      const halfCheckedKeys = this.$refs.tree.getHalfCheckedKeys();
+      const checkedKeys = [],
+        parentKeys = [];
+
+      checkedNodes.forEach((node) => {
+        if (!node.children) {
+          checkedKeys.push(node._id);
+        } else {
+          parentKeys.push(node._id);
+        }
+      });
+
+      const params = {
+        _id: this.curRoleId,
+        permissionList: {
+          checkedKeys,
+          halfCheckedKeys: [...parentKeys, ...halfCheckedKeys],
+        },
+      };
+      await this.$api.updatePermission(params);
+      this.isShowPermission = false;
+    },
   },
 };
 </script>

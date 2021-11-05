@@ -20,7 +20,7 @@ export default {
 			url: '/menu/list',
 			method: 'get',
 			data: params,
-			mock: true
+			mock: false
 		});
 	},
 	getUserList(params) {
@@ -79,6 +79,13 @@ export default {
 	roleOperate(params) {
 		return request({
 			url: '/roles/operate',
+			method: 'post',
+			data: params
+		});
+	},
+	updatePermission(params) {
+		return request({
+			url: '/roles/update/permission',
 			method: 'post',
 			data: params
 		});
