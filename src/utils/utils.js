@@ -1,5 +1,6 @@
 export default {
-	formateDate(date = new Date(date), rule) {
+	formateDate(date, rule) {
+		date = new Date(date);
 		let fmt = rule || 'yyyy-MM-dd hh:mm:ss';
 		const o = {
 			'y+': date.getFullYear(),

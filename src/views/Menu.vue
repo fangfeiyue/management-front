@@ -185,7 +185,7 @@ export default {
           label: "创建时间",
           prop: "createTime",
           formatter(row, column, value) {
-            return utils.formateDate(new Date(value));
+            return utils.formateDate(value);
           },
         },
       ],

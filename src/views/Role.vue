@@ -22,6 +22,7 @@
           :key="item.prop"
           :prop="item.prop"
           :label="item.label"
+          :formatter="item.formatter"
         ></el-table-column>
         <el-table-column label="操作" width="240">
           <template #default="scope">
@@ -102,6 +103,7 @@
   </div>
 </template>
 <script>
+import utils from "../utils/utils";
 export default {
   data() {
     return {
@@ -110,7 +112,7 @@ export default {
       // 当前要设置权限的角色
       curRole: "",
       curRoleId: "",
-      isShowPermission: true,
+      isShowPermission: false,
       isShowDialog: false,
       roleForm: {
         roleName: "",
@@ -128,10 +130,22 @@ export default {
         {
           label: "权限列表",
           prop: "permissionList",
+          formatter: (row, column, cellValue, index) => {
+            const actionMap = this.getActionMap();
+            const list = cellValue.halfCheckedKeys || [];
+            const res = [];
+            list.forEach((item) => {
+              if (actionMap[item]) res.push(actionMap[item]);
+            });
+            return res.join(",");
+          },
         },
         {
           label: "创建时间",
           prop: "createTime",
+          formatter(row, column, cellValue, index) {
+            return utils.formateDate(cellValue);
+          },
         },
       ],
       pager: {
@@ -174,6 +188,20 @@ export default {
       } catch (err) {
         throw err;
       }
+    },
+    getActionMap() {
+      const actionMap = {};
+      function deep(list) {
+        list.forEach((item) => {
+          if (item.children && item.action) {
+            actionMap[item._id] = item.menuName;
+          } else if (item.children && !item.action) {
+            deep(item.children);
+          }
+        });
+      }
+      deep(this.menuList);
+      return actionMap;
     },
     handleCreate() {
       this.action = "create";
@@ -225,7 +253,9 @@ export default {
       this.curRole = row.roleName;
       this.isShowPermission = true;
       const { checkedKeys } = row.permissionList;
-      this.$refs.tree.setCheckedKeys(checkedKeys);
+      this.$nextTick(() => {
+        this.$refs.tree.setCheckedKeys(checkedKeys);
+      });
     },
     async permissionSubmit() {
       const checkedNodes = this.$refs.tree.getCheckedNodes();
