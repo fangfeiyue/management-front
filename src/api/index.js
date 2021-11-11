@@ -90,7 +90,8 @@ export default {
 		return request({
 			url: '/roles/update/permission',
 			method: 'post',
-			data: params
+			data: params,
+			mock: false
 		});
 	}
 };

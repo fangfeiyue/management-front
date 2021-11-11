@@ -268,7 +268,7 @@ export default {
       this.curRoleId = row._id;
       this.curRole = row.roleName;
       this.isShowPermission = true;
-      const { checkedKeys } = row.permissionList;
+      const { checkedKeys = [] } = row.permissionList || {};
       this.$nextTick(() => {
         this.$refs.tree.setCheckedKeys(checkedKeys);
       });
@@ -295,7 +295,9 @@ export default {
         },
       };
       await this.$api.updatePermission(params);
+      this.$message.success("权限更新成功");
       this.isShowPermission = false;
+      this.getRoleList();
     },
   },
 };
