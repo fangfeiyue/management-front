@@ -43,14 +43,16 @@ export default {
 		return request({
 			url: '/roles/allList',
 			method: 'get',
-			data: {}
+			data: {},
+			mock: false
 		});
 	},
-	getRoleList() {
+	getRoleList(params) {
 		return request({
 			url: '/roles/list',
 			method: 'get',
-			data: {}
+			data: params,
+			mock: false
 		});
 	},
 	getDeptList() {
@@ -80,7 +82,8 @@ export default {
 		return request({
 			url: '/roles/operate',
 			method: 'post',
-			data: params
+			data: params,
+			mock: false
 		});
 	},
 	updatePermission(params) {

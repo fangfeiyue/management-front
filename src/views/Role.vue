@@ -35,7 +35,7 @@
               @click="handlePermission(scope.row)"
               >设置权限</el-button
             >
-            <el-button size="mini" type="danger" @click="handleDel"
+            <el-button size="mini" type="danger" @click="handleDel(scope.row)"
               >删除</el-button
             >
           </template>
@@ -44,6 +44,7 @@
       <el-pagination
         class="pagination"
         background
+        @current-change="handleCurrentChange"
         layout="prev, pager, next"
         :total="pager.total"
         :page-size="pager.pageSize"
@@ -132,7 +133,7 @@ export default {
           prop: "permissionList",
           formatter: (row, column, cellValue, index) => {
             const actionMap = this.getActionMap();
-            const list = cellValue.halfCheckedKeys || [];
+            const list = (cellValue && cellValue.halfCheckedKeys) || [];
             const res = [];
             list.forEach((item) => {
               if (actionMap[item]) res.push(actionMap[item]);
@@ -145,6 +146,13 @@ export default {
           prop: "createTime",
           formatter(row, column, cellValue, index) {
             return utils.formateDate(cellValue);
+          },
+        },
+        {
+          label: "更新时间",
+          prop: "updateTime",
+          formatter(row, column, val, index) {
+            return utils.formateDate(val);
           },
         },
       ],
@@ -175,7 +183,10 @@ export default {
   methods: {
     async getRoleList() {
       try {
-        const { list, page } = await this.$api.getRoleList();
+        const { list, page } = await this.$api.getRoleList({
+          ...this.ruleForm,
+          ...this.pager,
+        });
         this.pager = page;
         this.roleList = list;
       } catch (err) {
@@ -188,6 +199,10 @@ export default {
       } catch (err) {
         throw err;
       }
+    },
+    handleCurrentChange(page) {
+      this.pager.pageNum = page;
+      this.getRoleList();
     },
     getActionMap() {
       const actionMap = {};
@@ -215,14 +230,14 @@ export default {
         console.log("删除失败");
       }
     },
-    handleEdit(row) {
+    handleEdit({ _id, roleName, remark }) {
       this.action = "edit";
       // 一定要先弹出弹窗
       this.isShowDialog = true;
       this.$nextTick(() => {
         // 和之前一样，不能直接赋值给 roleForm，要不在编辑的时候点击关闭会导致类表中的数据被清除
         // this.roleForm = row;
-        Object.assign(this.roleForm, row);
+        Object.assign(this.roleForm, { _id, roleName, remark });
       });
     },
     handleReset(name) {
@@ -238,6 +253,7 @@ export default {
           const { roleForm, action } = this;
           try {
             await this.$api.roleOperate({ ...roleForm, action });
+            this.getRoleList();
             this.handleClose();
             this.$message.success("提交成功");
           } catch (err) {
