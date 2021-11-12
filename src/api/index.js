@@ -93,5 +93,12 @@ export default {
 			data: params,
 			mock: false
 		});
+	},
+	getDeptList(params) {
+		return request({
+			url: '/dept/list',
+			method: 'get',
+			data: params
+		});
 	}
 };
