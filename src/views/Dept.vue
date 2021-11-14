@@ -130,14 +130,10 @@ export default {
       ],
       deptList: [],
       userList: [],
-      pager: {
-        pageNum: 1,
-        pageSize: 10,
-      },
       deptForm: {
         user: "",
         deptName: "",
-        parentId: "",
+        parentId: [null],
         userEmail: "",
       },
       rules: {
@@ -177,10 +173,7 @@ export default {
     },
     async getDeptList() {
       try {
-        this.deptList = await this.$api.getDeptList({
-          ...this.queryForm,
-          ...this.pager,
-        });
+        this.deptList = await this.$api.getDeptList(this.queryForm);
       } catch (err) {
         console.log("获取部门列表失败", err);
       }
