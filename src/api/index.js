@@ -20,7 +20,7 @@ export default {
 			url: '/menu/list',
 			method: 'get',
 			data: params,
-			mock: true
+			mock: false
 		});
 	},
 	getUserList(params) {
@@ -84,6 +84,14 @@ export default {
 			url: '/users/operate',
 			method: 'post',
 			data: params,
+			mock: false
+		});
+	},
+	getPermissionList() {
+		return request({
+			url: '/users/getPermissionList',
+			method: 'get',
+			data: {},
 			mock: false
 		});
 	},
