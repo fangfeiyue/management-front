@@ -79,4 +79,18 @@ const router = createRouter({
 	history: createWebHashHistory()
 });
 
+function isMatch(path) {
+	// getRoutes()可以获取到所有我们配置的路由
+	return router.getRoutes().filter((route) => route.path === path).length;
+}
+
+router.beforeEach((to, from, next) => {
+	if (isMatch(to.path)) {
+		document.title = to.meta.title;
+		next();
+	} else {
+		next('/404');
+	}
+});
+
 export default router;
