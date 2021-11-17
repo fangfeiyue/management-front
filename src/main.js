@@ -8,8 +8,23 @@ import request from './utils/request';
 import api from './api/index';
 import './assets/style/reset.css';
 import './assets/style/index.scss';
+import storage from './utils/storage';
 
 const app = createApp(App);
+
+app.directive('has', {
+	beforeMount(el, binding) {
+		const actionList = storage.getItem('actionList') || [];
+		const hasPermission = actionList.includes(binding.value);
+		if (!hasPermission) {
+			el.style = 'display:none;';
+			setTimeout(() => {
+				el.parentNode.removeChild(el);
+			});
+		}
+	}
+});
+
 // 挂载
 app.config.globalProperties.$request = request;
 app.config.globalProperties.$api = api;
