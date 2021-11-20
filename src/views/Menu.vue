@@ -142,7 +142,7 @@
 <script>
 import utils from "../utils/utils";
 export default {
-  name: "menu",
+  name: "v-menu",
   data() {
     return {
       queryForm: {

@@ -21,7 +21,7 @@
       <el-table
         :data="deptList"
         row-key="_id"
-        :tree-props="{ children }"
+        :tree-props="{ children: 'children' }"
         stripe
       >
         <el-table-column
