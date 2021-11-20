@@ -17,5 +17,26 @@ export default {
 			}
 		}
 		return fmt;
+	},
+	generateRoute(list) {
+		const routes = [];
+		function deep(list) {
+			list.forEach((item) => {
+				if (item.children && item.action) {
+					const { menuName, path, component } = item;
+					routes.push({
+						name: component,
+						path,
+						meta: {
+							title: menuName
+						}
+					});
+				} else if (item.children && !item.action) {
+					deep(item.children);
+				}
+			});
+		}
+		deep(list);
+		return routes;
 	}
 };

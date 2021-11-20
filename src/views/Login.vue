@@ -28,13 +28,15 @@
   </div>
 </template>
 <script>
+import utils from "../utils/utils";
+import storage from "../utils/storage";
 export default {
   name: "login",
   data() {
     return {
       user: {
-        userName: 'f',
-        password: '123456',
+        userName: "f",
+        password: "123456",
       },
       rules: {
         userName: [
@@ -51,18 +53,31 @@ export default {
     };
   },
   methods: {
-    login() {
-      this.$refs.loginForm.validate((valid) => {
+    async login() {
+      this.$refs.loginForm.validate(async (valid) => {
         if (valid) {
-          this.$api.login(this.user).then((res) => {
-            console.log(res);
-            this.$store.commit('saveUserInfo', res);
-            this.$router.replace('/home/welcome');
+          this.$api.login(this.user).then(async (res) => {
+            this.$store.commit("saveUserInfo", res);
+            await this.loadAsyncRoutes();
+            this.$router.replace("/home/welcome");
           });
         } else {
           return false;
         }
       });
+    },
+    async loadAsyncRoutes() {
+      let userInfo = storage.getItem("userInfo") || {};
+      if (userInfo.token) {
+        try {
+          const { list } = await this.$api.getPermissionList();
+          let routes = utils.generateRoute(list);
+          routes.map((route) => {
+            route.component = () => import(`../views/${route.name}.vue`);
+            this.$router.addRoute("home", route);
+          });
+        } catch (error) {}
+      }
     },
   },
 };
@@ -93,14 +108,14 @@ export default {
     .nav-item {
       position: relative;
     }
-  .nav-item::before {
-    position: absolute;
-    border-bottom: 2px solid #f48024;
-    content: '';
-    display: block;
-    bottom: 0;
-    width: 100%;
-  }
+    .nav-item::before {
+      position: absolute;
+      border-bottom: 2px solid #f48024;
+      content: "";
+      display: block;
+      bottom: 0;
+      width: 100%;
+    }
   }
 }
 </style>
