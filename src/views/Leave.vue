@@ -32,15 +32,14 @@
         ></el-table-column>
         <el-table-column label="操作" width="150px">
           <template #default="scope">
-            <el-button
-              size="mini"
-              @click="handleDetail(scope.$index, scope.row)"
+            <el-button size="mini" @click="handleDetail(scope.row)"
               >查看</el-button
             >
             <el-button
               size="mini"
               type="danger"
-              @click="handleDel(scope.$index, scope.row)"
+              @click="handleDel(scope.row)"
+              :disabled="scope.row.applyState > 2"
               >作废</el-button
             >
           </template>
@@ -112,6 +111,35 @@
             <el-button type="primary" @click="handleSubmit('dialogForm')"
               >确定</el-button
             >
+          </span>
+        </template>
+      </el-dialog>
+      <el-dialog v-model="viewDialog" title="申请休假" destroy-on-close>
+        <el-steps
+          :active="detail.applyState > 3 ? 3 : detail.applyState"
+          align-center
+        >
+          <el-step title="待审批"></el-step>
+          <el-step title="审批中"></el-step>
+          <el-step title="审批通过/拒绝"></el-step>
+        </el-steps>
+        <el-form label-width="120px" label-suffix="：">
+          <el-form-item label="休假类型">{{
+            detail.applyStateName
+          }}</el-form-item>
+          <el-form-item label="休假时间">{{ detail.time }}</el-form-item>
+          <el-form-item label="休假时长">{{ detail.leaveTime }}</el-form-item>
+          <el-form-item label="休假原因">{{ detail.reasons }}</el-form-item>
+          <el-form-item label="审批状态">{{
+            detail.applyStateName
+          }}</el-form-item>
+          <el-form-item label="审批人">{{
+            detail.curAuditUserName
+          }}</el-form-item>
+        </el-form>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="viewDialog = false">关闭</el-button>
           </span>
         </template>
       </el-dialog>
@@ -310,14 +338,53 @@ export default {
         }
       });
     };
-    const handleDel = async (_id) => {
+    const handleDel = async ({ _id }) => {
       try {
         await $api.leaveOperate({ _id, action: "delete" });
         $message.success("删除成功");
         getApplyList();
       } catch (err) {}
     };
-    const handleDetail = () => {};
+
+    const detail = ref({});
+    const viewDialog = ref(false);
+    const handleDetail = (row) => {
+      viewDialog.value = true;
+      let {
+        applyState,
+        curAuditUserName,
+        endTime,
+        startTime,
+        applyType,
+        leaveTime,
+        reasons,
+      } = row;
+      applyType = {
+        1: "事假",
+        2: "调休",
+        3: "年假",
+      }[applyType];
+      const applyStateName = {
+        1: "待审批",
+        2: "审批中",
+        3: "审批拒绝",
+        4: "审批通过",
+        5: "作废",
+      }[applyState];
+      const time =
+        utils.formateDate(startTime, "yy-MM-dd") +
+        " 到 " +
+        utils.formateDate(endTime, "yy-MM-dd");
+      detail.value = {
+        applyState,
+        applyType,
+        leaveTime,
+        reasons,
+        time,
+        applyStateName,
+        curAuditUserName,
+      };
+    };
     const handleCurChange = (val) => {
       pager.pageNum = val;
       getApplyList();
@@ -325,10 +392,12 @@ export default {
     return {
       columns,
       rules,
+      detail,
       leaveList,
       queryForm,
       pager,
       ruleForm,
+      viewDialog,
       showDialog,
       selectOptions,
       handleReset,
