@@ -274,7 +274,8 @@ export default {
       reasons: "",
     });
     const validateApplyTime = () => {
-      if (ruleForm.endTime && ruleForm.startTime > ruleForm.endTime) {
+      if (ruleForm.startTime == "" || ruleForm.endTime == "") return false;
+      if (ruleForm.startTime > ruleForm.endTime) {
         $message.error("开始时间不能大于结束时间");
         ruleForm.leaveTime = "0天";
         return false;
