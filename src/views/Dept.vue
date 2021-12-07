@@ -179,7 +179,8 @@ export default {
       }
     },
     selectUser(val) {
-      this.deptForm.userEmail = val.split("/")[2] || "";
+      const [userId, userName, userEmail] = val.split("/");
+      Object.assign(this.deptForm, { userId, userName, userEmail });
     },
     handleCreate() {
       this.action = "create";
@@ -211,11 +212,14 @@ export default {
       this.$refs.dialogForm.validate(async (valid) => {
         if (valid) {
           const {
-            deptForm: { deptName, parentId, userEmail },
+            deptForm: { _id, deptName, parentId, userEmail, userName },
             action,
           } = this;
+
           await this.$api.deptOperate({
             action,
+            _id,
+            userName,
             deptName,
             parentId,
             userEmail,
