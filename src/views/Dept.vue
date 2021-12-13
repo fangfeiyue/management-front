@@ -212,13 +212,14 @@ export default {
       this.$refs.dialogForm.validate(async (valid) => {
         if (valid) {
           const {
-            deptForm: { _id, deptName, parentId, userEmail, userName },
+            deptForm: { _id, deptName, parentId, userEmail, userName, userId },
             action,
           } = this;
 
           await this.$api.deptOperate({
             action,
             _id,
+            userId,
             userName,
             deptName,
             parentId,
