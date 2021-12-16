@@ -116,6 +116,9 @@ export default {
       {
         prop: "startTime",
         label: "休假时间",
+        formatter(row, column, val, index) {
+          return utils.formateDate(val);
+        },
       },
       {
         prop: "leaveTime",
@@ -139,6 +142,9 @@ export default {
       {
         prop: "createTime",
         label: "申请时间",
+        formatter(row, col, val) {
+          return utils.formateDate(val);
+        },
       },
       {
         prop: "auditUsers",
@@ -222,6 +228,7 @@ export default {
             await $api.leaveApprove(params);
             $message.success("操作成功");
             handleClose("dialogForm");
+            $store.commit("saveNoticeCount", $store.state.noticeCount - 1);
             getApproveList();
           } catch (err) {
             console.log(err);

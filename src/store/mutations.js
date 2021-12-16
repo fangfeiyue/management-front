@@ -8,5 +8,8 @@ export default {
 	saveActionList(state, list) {
 		state.actionList = list;
 		storage.setItem('actionList', list);
+	},
+	saveNoticeCount(state, count) {
+		state.noticeCount = count;
 	}
 };
