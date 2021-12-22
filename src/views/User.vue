@@ -1,7 +1,8 @@
 <template>
   <div class="user-manage">
     <div class="query-form">
-      <el-form ref="form" :inline="true" :model="user">
+      <query-form :form="form" v-model="user" @handleQuery="handleQuery" />
+      <!-- <el-form ref="form" :inline="true" :model="user">
         <el-form-item label="用户ID" prop="userId">
           <el-input v-model="user.userId" placeholder="请输入用户ID" />
         </el-form-item>
@@ -20,7 +21,7 @@
           <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset('form')">重置</el-button>
         </el-form-item>
-      </el-form>
+      </el-form> -->
     </div>
     <div class="base-table">
       <div class="action">
@@ -163,8 +164,13 @@ export default {
       internalInstance.appContext.config.globalProperties.$message;
 
     // 设置默认值
-    const user = reactive({
+    // const user = reactive({
+    //   state: 1,
+    // });
+    const user = ref({
       state: 1,
+      userId: "",
+      userName: "",
     });
     const rules = reactive({
       userName: [
@@ -273,7 +279,7 @@ export default {
       getRoleAllList();
     });
     const getUserList = async () => {
-      const params = { ...user, ...pager };
+      const params = { ...user.value, ...pager };
       try {
         const { list, page } = await $api.getUserList(params);
         userList.value = list;
@@ -282,7 +288,7 @@ export default {
         console.log(err);
       }
     };
-    const handleQuery = () => {
+    const handleQuery = (val) => {
       getUserList();
     };
     const handleReset = (form) => {
@@ -376,7 +382,46 @@ export default {
       showModal.value = false;
       handleReset("dialogForm");
     };
+    const form = [
+      {
+        type: "input",
+        label: "用户ID",
+        model: "userId",
+        placeholder: "请输入用户ID",
+      },
+      {
+        type: "input",
+        label: "用户名称",
+        model: "userName",
+        placeholder: "请输入用户名称",
+      },
+      {
+        type: "select",
+        label: "状态",
+        model: "state",
+        placeholder: "请选择状态",
+        options: [
+          {
+            label: "所有",
+            value: 0,
+          },
+          {
+            label: "在职",
+            value: 1,
+          },
+          {
+            label: "离职",
+            value: 2,
+          },
+          {
+            label: "试用期",
+            value: 3,
+          },
+        ],
+      },
+    ];
     return {
+      form,
       user,
       rules,
       pager,
