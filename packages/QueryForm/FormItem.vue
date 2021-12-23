@@ -15,11 +15,7 @@
 
   <el-form-item :prop="item.model">
     <el-input v-if="item.type === 'input'" v-bind="$attrs"></el-input>
-    <el-select
-      v-if="item.type === 'select'"
-      v-model="item.model"
-      v-bind="$attrs"
-    >
+    <el-select v-if="item.type === 'select'" v-bind="$attrs">
       <el-option
         v-for="option in item.options"
         :key="option.value"

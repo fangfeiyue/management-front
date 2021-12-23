@@ -28,6 +28,12 @@ export default {
     };
 
     const handleQuery = () => {
+      console.log(
+        "queryModel",
+        queryModel,
+        "props.modelValue",
+        props.modelValue
+      );
       // 改变 v-model 绑定的值
       context.emit("update:modelValue", { ...queryModel });
 
@@ -35,7 +41,7 @@ export default {
       context.emit("handleQuery", { ...queryModel });
     };
 
-    console.log("queryModel", queryModel);
+    console.log("queryModel", queryModel, "props.modelValue", props.modelValue);
     return {
       form,
       queryModel,

@@ -23,7 +23,30 @@
         </el-form-item>
       </el-form> -->
     </div>
-    <div class="base-table">
+    <base-table
+      :columns="columns"
+      :data="userList"
+      :pager="pager"
+      @handleAction="handleAction"
+      @handleCurrentChange="handleCurrentChange"
+      @selection-change="handleSelectionChange"
+    >
+      <template v-slot:action>
+        <el-button
+          type="primary"
+          @click="handleCreate"
+          v-has:add="'user-create'"
+          >新增</el-button
+        >
+        <el-button
+          type="danger"
+          @click="handlePatchDel"
+          v-has:path-del="'user-patch-delete'"
+          >批量删除</el-button
+        >
+      </template>
+    </base-table>
+    <!-- <div class="base-table">
       <div class="action">
         <el-button
           type="primary"
@@ -74,7 +97,7 @@
         :total="pager.total"
         :page-size="pager.pageSize"
       />
-    </div>
+    </div> -->
     <el-dialog
       :title="action == 'add' ? '用户新增' : '用户编辑'"
       v-model="showModal"
@@ -221,6 +244,9 @@ export default {
     let checkedUserIds = reactive([]);
     const columns = reactive([
       {
+        type: "selection",
+      },
+      {
         label: "用户ID",
         prop: "userId",
       },
@@ -269,6 +295,23 @@ export default {
           return utils.formateDate(new Date());
         },
       },
+      {
+        type: "action",
+        label: "操作",
+        width: "150px",
+        list: [
+          {
+            type: "primary",
+            text: "编辑",
+            visible: true,
+          },
+          {
+            type: "danger",
+            text: "删除",
+            visible: true,
+          },
+        ],
+      },
     ]);
     const roleList = ref([]);
     const deptList = ref([]);
@@ -297,6 +340,13 @@ export default {
     const handleCurrentChange = (currentPage) => {
       pager.pageNum = currentPage;
       getUserList();
+    };
+    const handleAction = ({ index, row }) => {
+      if (index == 0) {
+        handleEdit(row);
+      } else if (index == 1) {
+        handleDel(row);
+      }
     };
     const handleEdit = (row) => {
       action.value = "edit";
@@ -434,8 +484,7 @@ export default {
       showModal,
       checkedUserIds,
 
-      handleDel,
-      handleEdit,
+      handleAction,
       handleQuery,
       getDeptList,
       handleReset,

@@ -1,7 +1,9 @@
-import QueryForm from './QueryForm.vue';
+import BaseTable from './BaseTabel/index';
+import QueryForm from './QueryForm/index';
 
-QueryForm.install = (app) => {
-	app.component(QueryForm.name, QueryForm);
+export default {
+	install(app) {
+		app.use(QueryForm);
+		app.use(BaseTable);
+	}
 };
-
-export default QueryForm;

@@ -9,7 +9,8 @@ import api from './api/index';
 import './assets/style/reset.css';
 import './assets/style/index.scss';
 import storage from './utils/storage';
-import QueryForm from '../packages/index';
+// import QueryForm from '../packages/index';
+import FCMP from '../packages/index';
 
 const app = createApp(App);
 
@@ -30,4 +31,4 @@ app.directive('has', {
 app.config.globalProperties.$request = request;
 app.config.globalProperties.$api = api;
 
-app.use(router).use(store).use(ElementPlus, { size: 'small' }).use(QueryForm).mount('#app');
+app.use(router).use(store).use(ElementPlus, { size: 'small' }).use(FCMP).mount('#app');
