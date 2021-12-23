@@ -96,7 +96,7 @@ export default {
       try {
         const count = await this.$api.noticeCount();
 
-        this.noticeCount = count;
+        // this.noticeCount = count;
         this.$store.commit("saveNoticeCount", count);
       } catch (err) {
         console.error(err);
